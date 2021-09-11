@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "pinout.h"
 
-void setup() {
+void setup_driver_pins(){
 	pinMode(ENA_DRIVER_PIN, OUTPUT);
 	pinMode(ENB_DRIVER_PIN, OUTPUT);
 	pinMode(IN1_DRIVER_PIN, OUTPUT);
@@ -13,6 +13,10 @@ void setup() {
 	digitalWrite(IN2_DRIVER_PIN, LOW);
 	digitalWrite(IN3_DRIVER_PIN, LOW);
 	digitalWrite(IN4_DRIVER_PIN, LOW);
+}
+
+void setup() {
+	setup_driver_pins();
 }
 
 void loop() {
