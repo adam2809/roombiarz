@@ -11,14 +11,14 @@ enum driver_pin_t{
 #define MAX_PROX_VALUE 30
 #define PROX_SENSOR_COUNT 3
 enum prox_sensor_pin_t{
-    PROX_SENSOR_CENTER = A0,
-    PROX_SENSOR_RIGHT = A1,
-    PROX_SENSOR_LEFT = A2
+    PROX_SENSOR_CENTER = A4,
+    PROX_SENSOR_RIGHT = A3,
+    PROX_SENSOR_LEFT = A5
 };
 
 enum prox_sensor_led_pin_t{
-    PROX_SENSOR_LED_CENTER = 8,
-    PROX_SENSOR_LED_RIGHT = 9,
+    PROX_SENSOR_LED_CENTER = 9,
+    PROX_SENSOR_LED_RIGHT = 8,
     PROX_SENSOR_LED_LEFT = 10
 };
 
