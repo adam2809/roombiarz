@@ -69,17 +69,12 @@ void set_motor_speed(motor_t motor,int speed){
 	
 }
 
-int speed=50;
+int get_prox(prox_sensor_pin_t pin){
+	float volts = analogRead(pin)*0.0048828125;
+	int distance = 13*pow(volts, -1); 
+    return distance <= 30 ? distance : -1;
+}
+
 void loop() {
-	set_motor_speed(MOTOR_A,speed);
-	speed+=100;
-	speed%=256;
-
-	Serial.println("Motor Forward");
-	set_motor_forward(MOTOR_A);
-	delay(1000);
-
-	Serial.println("Motor stopped");	
-	set_motor_stopped(MOTOR_A);
-	delay(1000);
+	Serial.println(get_prox(PROX_SENSOR_CENTER));
 }
