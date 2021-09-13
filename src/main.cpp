@@ -2,8 +2,10 @@
 #include "pinout.h"
 #include "motors.h"
 
-#define DEADZONE_MIN 475
-#define DEADZONE_MAX 530
+#define DEADZONE_MIN 250
+#define DEADZONE_MAX 770
+
+#define MAX_WHEELS_SPEED_DIFFERENCE 127
 
 prox_sensor_led_pin_t all_led_pins[] = {
     PROX_SENSOR_LED_CENTER,
@@ -75,21 +77,33 @@ void go_forward_and_stop(){
 	}
 }
 
-void loop() {
-	// Serial.print("LEFT: ");Serial.print(get_prox(PROX_SENSOR_LEFT));Serial.print(" CENTER: ");Serial.print(get_prox(PROX_SENSOR_CENTER));Serial.print(" RIGHT: ");Serial.print(get_prox(PROX_SENSOR_RIGHT));Serial.println();
-
+void joystick_control(){
 	int x_joystick = analogRead(X_AXIS);
 	int y_joystick = analogRead(Y_AXIS);
 
+	Serial.print("Y: ");Serial.print(y_joystick);Serial.print(" X: ");Serial.print(x_joystick);Serial.println();
+
 	if(x_joystick < DEADZONE_MAX && x_joystick > DEADZONE_MIN){
 		stop();
-	}
-	if(x_joystick >= DEADZONE_MAX){
-		go_forward();
-	}
-	if(x_joystick <= DEADZONE_MIN){
+	}else if(x_joystick >= DEADZONE_MAX){
 		go_backward();
+		return;
+	}else if(x_joystick <= DEADZONE_MIN){
+		go_forward();
+		return;
 	}
 
-	Serial.print("Y: ");Serial.print(x_joystick);Serial.print(" X: ");Serial.print(y_joystick);Serial.println();
+	int wheels_speed_difference;
+	if(y_joystick < DEADZONE_MAX && y_joystick > DEADZONE_MIN){
+		stop();
+	}else if(y_joystick >= DEADZONE_MAX){
+		rotate_left();
+	}else if(y_joystick <= DEADZONE_MIN){
+		// wheels_speed_difference=map(y_joystick,0,1024/2,MAX_WHEELS_SPEED_DIFFERENCE,0);
+		rotate_right();
+	}
+}
+
+void loop() {
+	// Serial.print("LEFT: ");Serial.print(get_prox(PROX_SENSOR_LEFT));Serial.print(" CENTER: ");Serial.print(get_prox(PROX_SENSOR_CENTER));Serial.print(" RIGHT: ");Serial.print(get_prox(PROX_SENSOR_RIGHT));Serial.println();
 }
