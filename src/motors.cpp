@@ -34,9 +34,17 @@ void set_motor_stopped(motor_t motor){
 }
 
 void go_forward(){
+    Serial.println("Going forward");
 	set_motor_forward(MOTOR_A);
 	set_motor_forward(MOTOR_B);
 }
+
+void go_backward(){
+    Serial.println("Going backward");
+	set_motor_backward(MOTOR_A);
+	set_motor_backward(MOTOR_B);
+}
+
 
 void stop(){
 	set_motor_stopped(MOTOR_A);

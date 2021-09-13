@@ -28,7 +28,7 @@ enum prox_sensor_led_pin_t{
 
 enum joystick_pin{
     X_AXIS = A3,
-    YAXIS = A4
-}
+    Y_AXIS = A4
+};
 #endif
 

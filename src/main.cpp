@@ -2,6 +2,9 @@
 #include "pinout.h"
 #include "motors.h"
 
+#define DEADZONE_MIN 475
+#define DEADZONE_MAX 530
+
 prox_sensor_led_pin_t all_led_pins[] = {
     PROX_SENSOR_LED_CENTER,
     PROX_SENSOR_LED_RIGHT,
@@ -56,7 +59,8 @@ int get_prox(prox_sensor_pin_t pin){
 long last_move_millis = 0;
 long move_interval_millis = 1000;
 bool is_moving = false;
-void loop() {
+
+void go_forward_and_stop(){
 	if (millis() - last_move_millis > move_interval_millis){
 		last_move_millis = millis();
 		if (is_moving){
@@ -69,18 +73,23 @@ void loop() {
 			is_moving = true;
 		}
 	}
+}
 
-	// for (int i=0;i<PROX_SENSOR_COUNT;i++){
-	// 	int dist = get_prox(all_prox_sensors[i]);
-	// 	Serial.print("Index: ");Serial.print(i);
-	// 	Serial.print("\tValue: ");Serial.println(dist);
-	// 	if(dist == -1){
-	// 		digitalWrite(all_led_pins[i],LOW);
-	// 	}else{
-	// 		int led_brightness = map(dist,0,MAX_PROX_VALUE,255,50);
-	// 		analogWrite(all_led_pins[i],led_brightness);
-	// 	}
-	// }
-	Serial.print("LEFT: ");Serial.print(get_prox(PROX_SENSOR_LEFT));Serial.print(" CENTER: ");Serial.print(get_prox(PROX_SENSOR_CENTER));Serial.print(" RIGHT: ");Serial.print(get_prox(PROX_SENSOR_RIGHT));Serial.println();
+void loop() {
+	// Serial.print("LEFT: ");Serial.print(get_prox(PROX_SENSOR_LEFT));Serial.print(" CENTER: ");Serial.print(get_prox(PROX_SENSOR_CENTER));Serial.print(" RIGHT: ");Serial.print(get_prox(PROX_SENSOR_RIGHT));Serial.println();
 
+	int x_joystick = analogRead(X_AXIS);
+	int y_joystick = analogRead(Y_AXIS);
+
+	if(x_joystick < DEADZONE_MAX && x_joystick > DEADZONE_MIN){
+		stop();
+	}
+	if(x_joystick >= DEADZONE_MAX){
+		go_forward();
+	}
+	if(x_joystick <= DEADZONE_MIN){
+		go_backward();
+	}
+
+	Serial.print("Y: ");Serial.print(x_joystick);Serial.print(" X: ");Serial.print(y_joystick);Serial.println();
 }
