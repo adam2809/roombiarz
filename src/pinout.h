@@ -1,3 +1,6 @@
+#ifndef PINOUT_H
+#define PINOUT_H
+
 enum driver_pin_t{
     IN1_DRIVER_PIN = 6,
     IN2_DRIVER_PIN = 5,
@@ -11,26 +14,21 @@ enum driver_pin_t{
 #define MAX_PROX_VALUE 30
 #define PROX_SENSOR_COUNT 3
 enum prox_sensor_pin_t{
-    PROX_SENSOR_CENTER = A4,
-    PROX_SENSOR_RIGHT = A3,
-    PROX_SENSOR_LEFT = A5
+    PROX_SENSOR_CENTER = A2,
+    PROX_SENSOR_RIGHT = A1,
+    PROX_SENSOR_LEFT = A0
 };
 
 enum prox_sensor_led_pin_t{
     PROX_SENSOR_LED_CENTER = 9,
+    // PROX_SENSOR_LED_CENTER_LEFT = 10,
     PROX_SENSOR_LED_RIGHT = 8,
-    PROX_SENSOR_LED_LEFT = 10
+    PROX_SENSOR_LED_LEFT = 11
 };
 
-prox_sensor_led_pin_t all_led_pins[] = {
-    PROX_SENSOR_LED_CENTER,
-    PROX_SENSOR_LED_RIGHT,
-    PROX_SENSOR_LED_LEFT
-};
-
-prox_sensor_pin_t all_prox_sensors[] = {
-    PROX_SENSOR_CENTER,
-    PROX_SENSOR_RIGHT,
-    PROX_SENSOR_LEFT
-};
+enum joystick_pin{
+    X_AXIS = A3,
+    YAXIS = A4
+}
+#endif
 
