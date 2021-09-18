@@ -105,5 +105,18 @@ void joystick_control(){
 }
 
 void loop() {
-	// Serial.print("LEFT: ");Serial.print(get_prox(PROX_SENSOR_LEFT));Serial.print(" CENTER: ");Serial.print(get_prox(PROX_SENSOR_CENTER));Serial.print(" RIGHT: ");Serial.print(get_prox(PROX_SENSOR_RIGHT));Serial.println();
+	Serial.print("LEFT: ");Serial.print(get_prox(PROX_SENSOR_LEFT));Serial.print(" CENTER: ");Serial.print(get_prox(PROX_SENSOR_CENTER));Serial.print(" RIGHT: ");Serial.print(get_prox(PROX_SENSOR_RIGHT));Serial.println();
+	bool is_wall_in_proximity = false;
+	for(int i = 0; i < PROX_SENSOR_COUNT; i++){
+		int prox = get_prox(all_prox_sensors[i]);
+		if(prox < 20 && prox != -1){
+			is_wall_in_proximity = true;
+		}
+	}
+	if (is_wall_in_proximity){
+		rotate_left();
+	}else{
+		go_forward();
+	}
+	
 }
