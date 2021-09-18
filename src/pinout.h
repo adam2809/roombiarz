@@ -1,11 +1,34 @@
-#define X_STICK_INPUT_PIN 13
-#define Y_STICK_INPUT_PIN 14
-#define SW_STICK_INPUT_PIN 12
+#ifndef PINOUT_H
+#define PINOUT_H
 
-#define IN1_DRIVER_PIN 6
-#define IN2_DRIVER_PIN 5
-#define IN3_DRIVER_PIN 4
-#define IN4_DRIVER_PIN 3
+enum driver_pin_t{
+    IN1_DRIVER_PIN = 6,
+    IN2_DRIVER_PIN = 5,
+    IN3_DRIVER_PIN = 4,
+    IN4_DRIVER_PIN = 3,
 
-#define ENA_DRIVER_PIN 7
-#define ENB_DRIVER_PIN 2
+    ENA_DRIVER_PIN = 7,
+    ENB_DRIVER_PIN = 2
+};
+
+#define MAX_PROX_VALUE 30
+#define PROX_SENSOR_COUNT 3
+enum prox_sensor_pin_t{
+    PROX_SENSOR_CENTER = A2,
+    PROX_SENSOR_RIGHT = A1,
+    PROX_SENSOR_LEFT = A0
+};
+
+enum prox_sensor_led_pin_t{
+    PROX_SENSOR_LED_CENTER = 9,
+    // PROX_SENSOR_LED_CENTER_LEFT = 10,
+    PROX_SENSOR_LED_RIGHT = 8,
+    PROX_SENSOR_LED_LEFT = 11
+};
+
+enum joystick_pin{
+    X_AXIS = A3,
+    Y_AXIS = A4
+};
+#endif
+
