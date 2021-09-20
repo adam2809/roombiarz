@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "pinout.h"
 #include "motors.h"
+#include "prox_sensor.cpp"
 
 #define DEADZONE_MIN 250
 #define DEADZONE_MAX 770
@@ -13,10 +14,10 @@ prox_sensor_led_pin_t all_led_pins[] = {
     PROX_SENSOR_LED_LEFT
 };
 
-prox_sensor_pin_t all_prox_sensors[] = {
-    PROX_SENSOR_CENTER,
-    PROX_SENSOR_RIGHT,
-    PROX_SENSOR_LEFT
+prox_sensor all_prox_sensors[] = {
+    prox_sensor(PROX_SENSOR_CENTER),
+    prox_sensor(PROX_SENSOR_RIGHT),
+    prox_sensor(PROX_SENSOR_LEFT)
 };
 
 void setup_driver_pins(){
@@ -52,11 +53,6 @@ void setup() {
 	set_motor_speed(MOTOR_B,255);
 }
 
-int get_prox(prox_sensor_pin_t pin){
-	float volts = analogRead(pin)*0.0048828125;
-	int distance = 13*pow(volts, -1); 
-    return distance <= MAX_PROX_VALUE ? distance : -1;
-}
 
 long last_move_millis = 0;
 long move_interval_millis = 1000;
@@ -104,16 +100,30 @@ void joystick_control(){
 	}
 }
 
-void loop() {
-	Serial.print("LEFT: ");Serial.print(get_prox(PROX_SENSOR_LEFT));Serial.print(" CENTER: ");Serial.print(get_prox(PROX_SENSOR_CENTER));Serial.print(" RIGHT: ");Serial.print(get_prox(PROX_SENSOR_RIGHT));Serial.println();
-	bool is_wall_in_proximity = false;
+bool is_wall_in_proximity(){
 	for(int i = 0; i < PROX_SENSOR_COUNT; i++){
-		int prox = get_prox(all_prox_sensors[i]);
+		int prox = all_prox_sensors[i].get_prox();
 		if(prox < 20 && prox != -1){
-			is_wall_in_proximity = true;
+			return true;
 		}
 	}
-	if (is_wall_in_proximity){
+	return false;
+}
+
+int non_infinite_prox_result_count = 0;
+int prox_result_avg = 0;
+bool is_wall_in_proximity_fitered(){
+	for(int i = 0; i < PROX_SENSOR_COUNT; i++){
+		int prox = all_prox_sensors[i].get_prox();
+		if(prox < 20 && prox != -1){
+			return true;
+		}
+	}
+}
+
+void loop() {
+	Serial.print("LEFT: ");Serial.print(all_prox_sensors[2].get_prox());Serial.print(" CENTER: ");Serial.print(all_prox_sensors[0].get_prox());Serial.print(" RIGHT: ");Serial.print(all_prox_sensors[1].get_prox());Serial.println();
+	if (is_wall_in_proximity()){
 		rotate_left();
 	}else{
 		go_forward();
