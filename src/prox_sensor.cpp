@@ -4,6 +4,10 @@ class prox_sensor{
     public:
         prox_sensor(prox_sensor_pin_t pin){
             _pin = pin;
+            for (int i = 0; i < FILTER_SIZE; i++){
+                filter.push_front(-1);
+            }
+            
         }
 
         int get_prox(){
@@ -12,23 +16,22 @@ class prox_sensor{
             return distance <= MAX_PROX_VALUE ? distance : -1;
         }
         
-        // int get_prox_filtered(){
-        //     int prox=get_prox();
-        //     if (get_prox() == -1){
-        //         in_range_prox_repeates = 0;
-        //         in_range_prox_sum = 0;
-        //         return -1;
-        //     }else{
-        //         in_range_prox_repeates++;
-        //         in_range_prox_sum 
-        //         if (in_range_prox_repeates < FILTER_SIZE){
-        //             return -1;
-        //         }
+        int get_prox_filtered(){
+            filter.push_front(get_prox());
+            filter.pop_back();
+        
+            int sum = 0;
+            for (int val : filter){
+                if (val == -1){
+                    return -1;
+                }else{
+                    sum+=val;
+                }
                 
-        //     }
-        // }
+            }
+            return sum/FILTER_SIZE;
+        }
     private:
         prox_sensor_pin_t _pin;
-        int in_range_prox_repeates = 0;
-        int in_range_prox_sum = 0;
+        std::deque<int> filter;
 }; 

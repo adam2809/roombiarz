@@ -1,4 +1,5 @@
 #include <Arduino.h>
 #include "pinout.h"
+#include <deque>
 
-#define FILTER_SIZE 10
+#define FILTER_SIZE 5

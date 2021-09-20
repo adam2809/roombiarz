@@ -110,20 +110,19 @@ bool is_wall_in_proximity(){
 	return false;
 }
 
-int non_infinite_prox_result_count = 0;
-int prox_result_avg = 0;
 bool is_wall_in_proximity_fitered(){
 	for(int i = 0; i < PROX_SENSOR_COUNT; i++){
-		int prox = all_prox_sensors[i].get_prox();
+		int prox = all_prox_sensors[i].get_prox_filtered();
 		if(prox < 20 && prox != -1){
 			return true;
 		}
 	}
+	return false;
 }
 
 void loop() {
-	Serial.print("LEFT: ");Serial.print(all_prox_sensors[2].get_prox());Serial.print(" CENTER: ");Serial.print(all_prox_sensors[0].get_prox());Serial.print(" RIGHT: ");Serial.print(all_prox_sensors[1].get_prox());Serial.println();
-	if (is_wall_in_proximity()){
+	Serial.print("LEFT: ");Serial.print(all_prox_sensors[2].get_prox_filtered());Serial.print(" CENTER: ");Serial.print(all_prox_sensors[0].get_prox_filtered());Serial.print(" RIGHT: ");Serial.print(all_prox_sensors[1].get_prox_filtered());Serial.println();
+	if(is_wall_in_proximity_fitered()){
 		rotate_left();
 	}else{
 		go_forward();
