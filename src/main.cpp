@@ -99,21 +99,9 @@ void joystick_control(){
 		rotate_right();
 	}
 }
-
-bool is_wall_in_proximity(){
-	for(int i = 0; i < PROX_SENSOR_COUNT; i++){
-		int prox = all_prox_sensors[i].get_prox();
-		if(prox < 20 && prox != -1){
-			return true;
-		}
-	}
-	return false;
-}
-
-bool is_wall_in_proximity_fitered(){
-	for(int i = 0; i < PROX_SENSOR_COUNT; i++){
-		int prox = all_prox_sensors[i].get_prox_filtered();
-		if(prox < 20 && prox != -1){
+bool is_wall_in_any_sensor_proximity(){
+	for(prox_sensor sensor : all_prox_sensors){
+		if (sensor.is_wall_in_prox()){
 			return true;
 		}
 	}
@@ -122,7 +110,7 @@ bool is_wall_in_proximity_fitered(){
 
 void loop() {
 	Serial.print("LEFT: ");Serial.print(all_prox_sensors[2].get_prox_filtered());Serial.print(" CENTER: ");Serial.print(all_prox_sensors[0].get_prox_filtered());Serial.print(" RIGHT: ");Serial.print(all_prox_sensors[1].get_prox_filtered());Serial.println();
-	if(is_wall_in_proximity_fitered()){
+	if(is_wall_in_any_sensor_proximity()){
 		rotate_left();
 	}else{
 		go_forward();

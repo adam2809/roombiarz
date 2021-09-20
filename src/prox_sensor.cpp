@@ -31,6 +31,11 @@ class prox_sensor{
             }
             return sum/FILTER_SIZE;
         }
+
+        bool is_wall_in_prox(){
+            int prox = get_prox_filtered();
+            return prox < 20 && prox != -1;
+        }
     private:
         prox_sensor_pin_t _pin;
         std::deque<int> filter;
