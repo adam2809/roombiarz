@@ -2,4 +2,4 @@
 #include "pinout.h"
 #include <deque>
 
-#define FILTER_SIZE 5
+#define FILTER_SIZE 10

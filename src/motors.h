@@ -15,5 +15,6 @@ void rotate_left();
 void rotate_right();
 void stop();
 void set_motor_speed(motor_t motor,int speed);
+void set_both_motor_speed(int speed);
 
 #endif

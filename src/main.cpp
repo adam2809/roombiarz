@@ -13,11 +13,13 @@ prox_sensor_led_pin_t all_led_pins[] = {
     PROX_SENSOR_LED_RIGHT,
     PROX_SENSOR_LED_LEFT
 };
-
+prox_sensor prox_sensor_center = prox_sensor(PROX_SENSOR_CENTER);
+prox_sensor prox_sensor_right = prox_sensor(PROX_SENSOR_RIGHT);
+prox_sensor prox_sensor_left = prox_sensor(PROX_SENSOR_LEFT);
 prox_sensor all_prox_sensors[] = {
-    prox_sensor(PROX_SENSOR_CENTER),
-    prox_sensor(PROX_SENSOR_RIGHT),
-    prox_sensor(PROX_SENSOR_LEFT)
+	prox_sensor_center,
+	prox_sensor_right,
+	prox_sensor_left
 };
 
 void setup_driver_pins(){
@@ -49,8 +51,7 @@ void setup() {
 	setup_led_pins();
 	setup_driver_pins();
 
-	set_motor_speed(MOTOR_A,255);
-	set_motor_speed(MOTOR_B,255);
+	set_both_motor_speed(255);
 }
 
 
@@ -108,12 +109,62 @@ bool is_wall_in_any_sensor_proximity(){
 	return false;
 }
 
-void loop() {
-	Serial.print("LEFT: ");Serial.print(all_prox_sensors[2].get_prox_filtered());Serial.print(" CENTER: ");Serial.print(all_prox_sensors[0].get_prox_filtered());Serial.print(" RIGHT: ");Serial.print(all_prox_sensors[1].get_prox_filtered());Serial.println();
-	if(is_wall_in_any_sensor_proximity()){
-		rotate_left();
+enum wall_detected_t{
+	NO_WALL,
+	LEFT_WALL,
+	RIGHT_WALL
+};
+wall_detected_t wall_detected = NO_WALL; 
+void stick_to_wall_basic(){
+	if(!is_wall_in_any_sensor_proximity()){
+		switch (wall_detected){
+		case NO_WALL:
+			go_forward();
+			break;
+		case LEFT_WALL:
+			rotate_left();
+			break;
+		case RIGHT_WALL:
+			rotate_right();
+			break;
+		}
 	}else{
-		go_forward();
+		if (
+			(prox_sensor_center.is_wall_in_prox() && ((!prox_sensor_right.is_wall_in_prox() && !prox_sensor_left.is_wall_in_prox()) || (prox_sensor_right.is_wall_in_prox() && prox_sensor_left.is_wall_in_prox()))) ||
+			(!prox_sensor_center.is_wall_in_prox() && prox_sensor_right.is_wall_in_prox() && prox_sensor_left.is_wall_in_prox())
+		){
+			rotate_left();
+		}else if (prox_sensor_right.is_wall_in_prox() && prox_sensor_center.is_wall_in_prox()){
+			rotate_left();
+			wall_detected = RIGHT_WALL;
+		}else if (prox_sensor_left.is_wall_in_prox() && prox_sensor_center.is_wall_in_prox()){
+			rotate_right();
+			wall_detected = LEFT_WALL;
+		}else if (prox_sensor_right.is_wall_in_prox()){
+			rotate_right();
+			wall_detected = RIGHT_WALL;
+		}else if (prox_sensor_left.is_wall_in_prox()){
+			rotate_left();
+			wall_detected = LEFT_WALL;
+		}else{
+			Serial.println("Logic has a hole!!!!!!!!!");
+		}
 	}
-	
+}
+
+void loop() {
+	Serial.print("LEFT: ");Serial.print(all_prox_sensors[2].get_prox_filtered());Serial.print(" CENTER: ");Serial.print(all_prox_sensors[0].get_prox_filtered());Serial.print(" RIGHT: ");Serial.print(all_prox_sensors[1].get_prox_filtered());
+	stick_to_wall_basic();
+	switch (wall_detected){
+	case NO_WALL:
+		Serial.print("	NO_WALL");
+		break;
+	case LEFT_WALL:
+		Serial.print("	LEFT_WALL");
+		break;
+	case RIGHT_WALL:
+		Serial.print("	RIGHT_WALL");
+		break;
+	}
+	Serial.println();
 }

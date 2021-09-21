@@ -59,6 +59,12 @@ void rotate_right(){
 	set_motor_forward(MOTOR_B);
 }
 
+void set_both_motor_speed(int speed){
+	set_motor_speed(MOTOR_A,speed);
+	set_motor_speed(MOTOR_B,speed);
+
+}
+
 void set_motor_speed(motor_t motor,int speed){
 	if (motor == MOTOR_A){
 		analogWrite(ENA_DRIVER_PIN,speed);

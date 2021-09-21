@@ -7,8 +7,8 @@ enum driver_pin_t{
     IN3_DRIVER_PIN = 4,
     IN4_DRIVER_PIN = 3,
 
-    ENA_DRIVER_PIN = 7,
-    ENB_DRIVER_PIN = 2
+    ENA_DRIVER_PIN = 10,
+    ENB_DRIVER_PIN = 9
 };
 
 #define MAX_PROX_VALUE 30
