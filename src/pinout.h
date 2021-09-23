@@ -19,6 +19,11 @@ enum prox_sensor_pin_t{
     PROX_SENSOR_LEFT = A0
 };
 
+enum bumper_button_pin_t{
+    BUMPER_BUTTON_LEFT = 12,
+    BUMPER_BUTTON_RIGHT = 13
+};
+
 enum prox_sensor_led_pin_t{
     PROX_SENSOR_LED_CENTER = 9,
     // PROX_SENSOR_LED_CENTER_LEFT = 10,

@@ -8,6 +8,11 @@
 
 #define MAX_WHEELS_SPEED_DIFFERENCE 127
 
+#define WALL_FINDING_ROTATION_TIME 1000
+
+#define AROUND_CORNER_FORWARD_TIME 2000
+#define AROUND_CORNER_ROTATION_TIME 3000
+
 prox_sensor_led_pin_t all_led_pins[] = {
     PROX_SENSOR_LED_CENTER,
     PROX_SENSOR_LED_RIGHT,
@@ -21,6 +26,8 @@ prox_sensor all_prox_sensors[] = {
 	prox_sensor_right,
 	prox_sensor_left
 };
+
+bumper_button bumper = bumper_button(BUMPER_BUTTON_LEFT,BUMPER_BUTTON_RIGHT);
 
 void setup_driver_pins(){
 	pinMode(ENA_DRIVER_PIN, OUTPUT);
@@ -114,10 +121,13 @@ enum wall_detected_t{
 	LEFT_WALL,
 	RIGHT_WALL
 };
-wall_detected_t wall_detected = NO_WALL; 
+wall_detected_t last_wall_detected = NO_WALL; 
 void stick_to_wall_basic(){
+
+
+
 	if(!is_wall_in_any_sensor_proximity()){
-		switch (wall_detected){
+		switch (last_wall_detected){
 		case NO_WALL:
 			go_forward();
 			break;
@@ -128,6 +138,7 @@ void stick_to_wall_basic(){
 			turn_right();
 			break;
 		}
+		go_forward();
 	}else{
 		if (
 			(prox_sensor_center.is_wall_in_prox() && ((!prox_sensor_right.is_wall_in_prox() && !prox_sensor_left.is_wall_in_prox()) || (prox_sensor_right.is_wall_in_prox() && prox_sensor_left.is_wall_in_prox()))) ||
@@ -136,41 +147,97 @@ void stick_to_wall_basic(){
 			turn_left();
 		}else if (prox_sensor_right.is_wall_in_prox() && prox_sensor_center.is_wall_in_prox()){
 			turn_left();
-			wall_detected = RIGHT_WALL;
+			last_wall_detected = RIGHT_WALL;
 		}else if (prox_sensor_left.is_wall_in_prox() && prox_sensor_center.is_wall_in_prox()){
 			turn_right();
-			wall_detected = LEFT_WALL;
+			last_wall_detected = LEFT_WALL;
 		}else if (prox_sensor_right.is_wall_in_prox()){
 			turn_right();
-			wall_detected = RIGHT_WALL;
+			last_wall_detected = RIGHT_WALL;
 		}else if (prox_sensor_left.is_wall_in_prox()){
 			turn_left();
-			wall_detected = LEFT_WALL;
+			last_wall_detected = LEFT_WALL;
 		}else{
 			Serial.println("Logic has a hole!!!!!!!!!");
 		}
 	}
 }
 
-void find_wall(){
+void stick_to_wall(wall_detected_t wall){
+	if (wall == LEFT_WALL){
+		if (prox_sensor_left.is_wall_in_prox() && prox_sensor_center.is_wall_in_prox()){
+			turn_left();
+		}else if (prox_sensor_left.is_wall_in_prox()){
+			turn_right();
+		}
+	}else{
+		if (prox_sensor_right.is_wall_in_prox() && prox_sensor_center.is_wall_in_prox()){
+			turn_left();
+		}else if (prox_sensor_right.is_wall_in_prox()){
+			turn_right();
+		}
+	}
+	
+}
 
+void turn_around_corner(wall_detected_t wall){
+	go_forward();
+	delay(AROUND_CORNER_FORWARD_TIME);
+
+	if (wall == LEFT_WALL){
+		rotate_left();
+	}else{
+		rotate_right();
+	}
+	delay(AROUND_CORNER_ROTATION_TIME);
+	stop();
+}
+
+
+wall_detected_t make_corner_turn(){
+	if (last_wall_detected == LEFT_WALL){
+		rotate_right();
+	}else{
+		rotate_left();
+	}
+
+	delay(WALL_FINDING_ROTATION_TIME);
+
+	if (last_wall_detected == LEFT_WALL){
+		rotate_left();
+		delay(WALL_FINDING_ROTATION_TIME);
+		if (!(prox_sensor_left.is_wall_in_prox()||prox_sensor_center.is_wall_in_prox())){
+			turn_around_corner(LEFT_WALL);
+		}
+		stick_to_wall_basic();
+	}else{
+		rotate_right();
+		delay(WALL_FINDING_ROTATION_TIME);
+
+		if (!(prox_sensor_left.is_wall_in_prox()||prox_sensor_center.is_wall_in_prox())){
+			turn_around_corner(RIGHT_WALL);
+		}
+		stick_to_wall_basic();
+
+	}
 }
 
 void loop() {
 	Serial.print("LEFT: ");Serial.print(all_prox_sensors[2].get_prox_filtered());Serial.print(" CENTER: ");Serial.print(all_prox_sensors[0].get_prox_filtered());Serial.print(" RIGHT: ");Serial.print(all_prox_sensors[1].get_prox_filtered());
-	// stick_to_wall_basic();
-	go_forward_and_stop();
+	stick_to_wall_basic();
+	// stick_to_wall(LEFT_WALL);
+	// go_forward();
 
-	switch (wall_detected){
-	case NO_WALL:
-		Serial.print("	NO_WALL");
-		break;
-	case LEFT_WALL:
-		Serial.print("	LEFT_WALL");
-		break;
-	case RIGHT_WALL:
-		Serial.print("	RIGHT_WALL");
-		break;
-	}
+	// switch (last_wall_detected){
+	// case NO_WALL:
+	// 	Serial.print("	NO_WALL");
+	// 	break;
+	// case LEFT_WALL:
+	// 	Serial.print("	LEFT_WALL");
+	// 	break;
+	// case RIGHT_WALL:
+	// 	Serial.print("	RIGHT_WALL");
+	// 	break;
+	// }
 	Serial.println();
 }

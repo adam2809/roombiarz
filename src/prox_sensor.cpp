@@ -39,4 +39,28 @@ class prox_sensor{
     private:
         prox_sensor_pin_t _pin;
         std::deque<int> filter;
-}; 
+};
+
+enum bumper_button_position_t{
+    POSITION_DEFAULT= B11,
+    POSITION_LEFT = B01,
+    POSITION_RIGHT= B10,
+    POSITION_CENTER= B00
+};
+class bumper_button{
+    public:
+        bumper_button(bumper_button_pin_t left_pin,bumper_button_pin_t right_pin){
+            _left_pin = left_pin;
+            _right_pin = right_pin;
+            pinMode(left_pin,INPUT_PULLUP);
+            pinMode(right_pin,INPUT_PULLUP);
+        }
+
+        bumper_button_pin_t get_position(){
+            return static_cast<bumper_button_pin_t>((digitalRead(_left_pin) << 1) | digitalRead(_right_pin));
+        }
+
+    private:
+        bumper_button_pin_t _left_pin;
+        bumper_button_pin_t _right_pin;
+};
