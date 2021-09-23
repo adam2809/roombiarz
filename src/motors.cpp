@@ -49,13 +49,22 @@ void stop(){
 }
 
 
-void rotate_left(){
+void turn_left(){
 	set_motor_forward(MOTOR_A);
 	set_motor_stopped(MOTOR_B);
 }
 
-void rotate_right(){
+void turn_right(){
 	set_motor_stopped(MOTOR_A);
+	set_motor_forward(MOTOR_B);
+}
+void rotate_left(){
+	set_motor_forward(MOTOR_A);
+	set_motor_backward(MOTOR_B);
+}
+
+void rotate_right(){
+	set_motor_backward(MOTOR_A);
 	set_motor_forward(MOTOR_B);
 }
 

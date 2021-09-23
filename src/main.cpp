@@ -64,11 +64,11 @@ void go_forward_and_stop(){
 		last_move_millis = millis();
 		if (is_moving){
 			Serial.println("Stopping");
-			stop();
+			rotate_left();
 			is_moving = false;
 		}else{
 			Serial.println("Moving forward");
-			go_forward();
+			rotate_right();
 			is_moving = true;
 		}
 	}
@@ -94,10 +94,10 @@ void joystick_control(){
 	if(y_joystick < DEADZONE_MAX && y_joystick > DEADZONE_MIN){
 		stop();
 	}else if(y_joystick >= DEADZONE_MAX){
-		rotate_left();
+		turn_left();
 	}else if(y_joystick <= DEADZONE_MIN){
 		// wheels_speed_difference=map(y_joystick,0,1024/2,MAX_WHEELS_SPEED_DIFFERENCE,0);
-		rotate_right();
+		turn_right();
 	}
 }
 bool is_wall_in_any_sensor_proximity(){
@@ -122,10 +122,10 @@ void stick_to_wall_basic(){
 			go_forward();
 			break;
 		case LEFT_WALL:
-			rotate_left();
+			turn_left();
 			break;
 		case RIGHT_WALL:
-			rotate_right();
+			turn_right();
 			break;
 		}
 	}else{
@@ -133,18 +133,18 @@ void stick_to_wall_basic(){
 			(prox_sensor_center.is_wall_in_prox() && ((!prox_sensor_right.is_wall_in_prox() && !prox_sensor_left.is_wall_in_prox()) || (prox_sensor_right.is_wall_in_prox() && prox_sensor_left.is_wall_in_prox()))) ||
 			(!prox_sensor_center.is_wall_in_prox() && prox_sensor_right.is_wall_in_prox() && prox_sensor_left.is_wall_in_prox())
 		){
-			rotate_left();
+			turn_left();
 		}else if (prox_sensor_right.is_wall_in_prox() && prox_sensor_center.is_wall_in_prox()){
-			rotate_left();
+			turn_left();
 			wall_detected = RIGHT_WALL;
 		}else if (prox_sensor_left.is_wall_in_prox() && prox_sensor_center.is_wall_in_prox()){
-			rotate_right();
+			turn_right();
 			wall_detected = LEFT_WALL;
 		}else if (prox_sensor_right.is_wall_in_prox()){
-			rotate_right();
+			turn_right();
 			wall_detected = RIGHT_WALL;
 		}else if (prox_sensor_left.is_wall_in_prox()){
-			rotate_left();
+			turn_left();
 			wall_detected = LEFT_WALL;
 		}else{
 			Serial.println("Logic has a hole!!!!!!!!!");
@@ -152,9 +152,15 @@ void stick_to_wall_basic(){
 	}
 }
 
+void find_wall(){
+
+}
+
 void loop() {
 	Serial.print("LEFT: ");Serial.print(all_prox_sensors[2].get_prox_filtered());Serial.print(" CENTER: ");Serial.print(all_prox_sensors[0].get_prox_filtered());Serial.print(" RIGHT: ");Serial.print(all_prox_sensors[1].get_prox_filtered());
-	stick_to_wall_basic();
+	// stick_to_wall_basic();
+	go_forward_and_stop();
+
 	switch (wall_detected){
 	case NO_WALL:
 		Serial.print("	NO_WALL");
